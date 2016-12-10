@@ -21,7 +21,7 @@ const panelsModule = angular.module('app.panels', [ocLazyLoad])
 
     _.each(panels, (c, i) => {
       c.load = function() {
-        var loadComponent = require('bundle?lazy&name=[folder]!./' + moduleNames[i] + '/index');
+        var loadComponent = require('bundle-loader?lazy&name=[folder]!./' + moduleNames[i] + '/index');
         return $q((resolve) => {
           loadComponent(function(module) {
             resolve($ocLazyLoad.load({

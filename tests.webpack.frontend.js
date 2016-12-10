@@ -4,11 +4,10 @@
 // Explicitely import vendors modules (as they are put in a separate bundle when not in test mode)
 import angular from 'angular';
 import angularmocks from 'angular-mocks';
-import registerAngularModule from 'registerAngularModule';
 import jquery from 'jquery';
 import lodash from 'lodash';
 import d3 from 'd3';
-import 'bootstrap-webpack!./src/website/bootstrap.config.js';
+import 'bootstrap-webpack!./bootstrap.config.js';
 import 'bootstrap_dropdowns_enhancement/dist/js/dropdowns-enhancement';
 import 'admin-lte/dist/js/app';
 

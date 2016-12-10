@@ -19,54 +19,58 @@ fs.readdirSync('node_modules')
   });
 
 module.exports = {
-  // Server app entry point
-  entry: [
-    !appConfig.test ? './src/server/main.js' : './tests.webpack.backend.js'
-  ],
-  // Inform webpack that we are targetting node and not the browser
-  target: 'node',
-  // Backend bundle output configuration
-  output: !appConfig.test ?
-  {
-    path: path.join(__dirname, 'build/server'),
-    filename: 'backend.js'
-  } :
-  {
-    path: path.join(__dirname, 'build/server-tests'),
-    filename: 'backend-tests.js'
+  webpackConfig: {
+    // Server app entry point
+    entry: [!appConfig.test ? './src/server/main.js' : './tests.webpack.backend.js'],
+    // Inform webpack that we are targetting node and not the browser
+    target: 'node',
+    // Backend bundle output configuration
+    output: !appConfig.test ? {
+      path: path.join(__dirname, 'build/server'),
+      filename: 'backend.js'
+    } : {
+      path: path.join(__dirname, 'build/server-tests'),
+      filename: 'backend-tests.js'
+    },
+    // do not freeze __dirname and __filename when bundling with webpack
+    node: {
+      __dirname: false,
+      __filename: false
+    },
+    // add node modules in externals, they will not be bundled by webpack
+    externals: nodeModules,
+    // Store/Load compiler state from/to a json file. This will result in persistent ids of modules and chunks.
+    // This is required, when using Hot Code Replacement between multiple calls to the compiler.
+    recordsPath: path.join(__dirname, !appConfig.test ? 'build/server/_records' : 'build/server-tests/_records'),
+    // Webpack plugins used for the backend
+    plugins: [
+      // Provide lodash as global
+      new webpack.ProvidePlugin({
+        '_': 'lodash',
+        '_math': 'lodash-math'
+      }),
+      // Insert code at the top of the generated bundle file :
+      //  - ensure window is undefined
+      //  - add source map support to get a detailed stack trace when an exception is thrown
+      new webpack.BannerPlugin({
+        banner: 'window = undefined; require("source-map-support").install();',
+        raw: true,
+        entryOnly: false
+      }),
+    ],
   },
-  // do not freeze __dirname and __filename when bundling with webpack
-  node: {
-    __dirname: false,
-    __filename: false
-  },
-  // add node modules in externals, they will not be bundled by webpack
-  externals: nodeModules,
-  // Store/Load compiler state from/to a json file. This will result in persistent ids of modules and chunks.
-  // This is required, when using Hot Code Replacement between multiple calls to the compiler.
-  recordsPath: path.join(__dirname, !appConfig.test ? 'build/server/_records' : 'build/server-tests/_records'),
-  // Webpack plugins used for the backend
-  plugins: [
-    // Provide lodash as global
-    new webpack.ProvidePlugin({
-      '_': 'lodash',
-      '_math' : 'lodash-math'
-    }),
-    // Insert code at the top of the generated bundle file :
-    //  - ensure window is undefined
-    //  - add source map support to get a detailed stack trace when an exception is thrown
-    new webpack.BannerPlugin('window = undefined; require("source-map-support").install();', {
-      raw: true,
-      entryOnly: false
-    })
-  ],
-  // jshint configuration for the backend
-  jshint: {
-    // any jshint option http://www.jshint.com/docs/options/
-    node: true,
-    globals: {
-      '_': false,
-      '_math' : false
+  loadersOptions: {
+    options: {
+      // jshint configuration for the backend
+      jshint: {
+        // any jshint option http://www.jshint.com/docs/options/
+        node: true,
+        globals: {
+          '_': false,
+          '_math': false
+        }
+      }
     }
   }
+
 };
