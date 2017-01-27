@@ -1,7 +1,11 @@
 var globalBootStrapConfig = require('./bootstrap.config');
-globalBootStrapConfig.styleLoader = require('extract-text-webpack-plugin').extract({
-  fallbackLoader: 'style-loader',
-  loader: ['css-loader', 'postcss-loader', 'less-loader']
+var fbCssLoader = 'style-loader';
+var cssLoaders = 'css-loader!postcss-loader!less-loader';
+var cssExtractLoader = require('extract-text-webpack-plugin').extract({
+  fallbackLoader: fbCssLoader,
+  loader: cssExtractLoader
 });
-
+globalBootStrapConfig.styleLoader = cssExtractLoader[0].loader +
+                                    '?' + JSON.stringify(cssExtractLoader[0].options) +
+                                    '!' + fbCssLoader + '!' + cssLoaders;
 module.exports = globalBootStrapConfig;
