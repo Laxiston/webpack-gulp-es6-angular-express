@@ -17,7 +17,7 @@ var webpackPlugins = [
   }),
   // When there are errors while compiling this plugin skips the emitting phase (and recording phase),
   // so there are no assets emitted that include errors.
-  new webpack.NoErrorsPlugin()
+  new webpack.NoEmitOnErrorsPlugin()
 
 ];
 

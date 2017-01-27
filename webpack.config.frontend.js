@@ -170,14 +170,11 @@ module.exports = {
         },
         {
           test: /\.less$/,
-          use: (!appConfig.watch && !appConfig.test) ? [
-            {
-              loader: ExtractTextPlugin.extract({
-                fallbackLoader: 'style-loader',
-                loader: 'css-loader!postcss-loader!less-loader'
-              })
-            }
-          ] :
+          loader: (!appConfig.watch && !appConfig.test) ? ExtractTextPlugin.extract({
+            fallbackLoader: 'style-loader',
+            loader: 'css-loader!postcss-loader!less-loader'
+          }) : undefined,
+          use: (!appConfig.watch && !appConfig.test) ? undefined :
           [
             {
               loader: 'style-loader'
