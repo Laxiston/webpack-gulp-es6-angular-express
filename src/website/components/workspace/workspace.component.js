@@ -1,5 +1,5 @@
 import 'gridstack/dist/gridstack.css';
-import 'gridstack';
+import 'gridstack/dist/gridstack.all';
 
 import './workspace.css';
 

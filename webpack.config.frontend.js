@@ -8,11 +8,48 @@ var appConfig = require('./config');
 // resolve path to minified angular dist
 var pathToAngular = path.resolve(__dirname, 'node_modules/angular/angular.min.js');
 
+var cssLoaders = [
+  {
+    loader: 'style-loader'
+  },
+  {
+    loader: 'css-loader'
+  },
+  {
+    loader: 'postcss-loader'
+  }
+];
+
+var lessLoaders = [
+  {
+    loader: 'style-loader'
+  },
+  {
+    loader: 'css-loader'
+  },
+  {
+    loader: 'postcss-loader'
+  },
+  {
+    loader: 'less-loader'
+  }
+];
+
 // extract css in non watch mode (don't extract in watch mode as we want hot reloading of css)
 if (!appConfig.watch) {
 
   // the extract-text-webpack-plugin for extracting stylesheets in a separate css file
   var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+  cssLoaders = ExtractTextPlugin.extract({
+                 fallback: 'style-loader',
+                 use: 'css-loader!postcss-loader'
+               });
+
+  lessLoaders = ExtractTextPlugin.extract({
+                  fallback: 'style-loader',
+                  use: 'css-loader!postcss-loader!less-loader'
+                });
 
 }
 
@@ -40,6 +77,7 @@ if (!appConfig.test) {
       name: 'vendors',
       minChunks: Infinity
     }),
+
     // Automatically generate the index.html file including all webpack generated assets
     new HtmlWebpackPlugin({
       title: 'Webpack Angular Test',
@@ -111,7 +149,8 @@ module.exports = {
       // It is a good practice to do so as the code it contains is unlikely to change during the application lifetime.
       // This will allow you to do updates to your application, without requiring the users to download the vendors bundle again
       // See http://dmachat.github.io/angular-webpack-cookbook/Split-app-and-vendors.html for more details
-      vendors: ['angular', 'angular-ui-router', 'jquery', 'jquery-ui', 'lodash', 'd3',
+      vendors: ['angular', '@uirouter/angularjs', 'jquery', 'jquery-ui',
+                'gridstack/dist/gridstack.all', 'lodash', 'd3',
                 !appConfig.watch ? 'bootstrap-webpack!./bootstrap.config.extract.js' :
                                    'bootstrap-webpack!./bootstrap.config.js',
                'bootstrap_dropdowns_enhancement/dist/js/dropdowns-enhancement',
@@ -151,44 +190,11 @@ module.exports = {
         // In production mode, extract all the stylesheets to a separate css file (improve loading performances of the application)
         {
           test: /\.css$/,
-          loader: (!appConfig.watch && !appConfig.test) ? ExtractTextPlugin.extract({
-            fallbackLoader: 'style-loader',
-            loader: 'css-loader!postcss-loader'
-          }) : undefined,
-          use: (!appConfig.watch && !appConfig.test) ? undefined :
-          [
-            {
-              loader: 'style-loader'
-            },
-            {
-              loader: 'css-loader'
-            },
-            {
-              loader: 'postcss-loader'
-            }
-          ]
+          use: cssLoaders
         },
         {
           test: /\.less$/,
-          loader: (!appConfig.watch && !appConfig.test) ? ExtractTextPlugin.extract({
-            fallbackLoader: 'style-loader',
-            loader: 'css-loader!postcss-loader!less-loader'
-          }) : undefined,
-          use: (!appConfig.watch && !appConfig.test) ? undefined :
-          [
-            {
-              loader: 'style-loader'
-            },
-            {
-              loader: 'css-loader'
-            },
-            {
-              loader: 'postcss-loader'
-            },
-            {
-              loader: 'less-loader'
-            }
-          ]
+          use: lessLoaders
         },
 
         // Loaders for the font files (bootstrap, font-awesome, ...)

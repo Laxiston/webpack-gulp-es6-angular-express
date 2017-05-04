@@ -9,7 +9,7 @@ import components from './components/components';
 import services from './services/services';
 import panels from './panels/panels';
 
-import uiRouter from 'angular-ui-router';
+import uiRouter from '@uirouter/angularjs';
 
 import AppTemplate from './app.html';
 
@@ -37,13 +37,15 @@ const app = angular.module('app', [services.name, components.module.name, panels
   .config(($stateProvider, $urlRouterProvider) => {
     'ngInject';
     $urlRouterProvider.otherwise('/cars');
-    $stateProvider.state('cars', {
+    $stateProvider.state({
+        name: 'cars',
         url: '/cars',
-        template: '<workspace data-dataset-id="cars"/>',
+        template: '<workspace data-dataset-id="cars"/>'
       })
-      .state('cameras', {
+      .state({
+        name: 'cameras',
         url: '/cameras',
-        template: '<workspace data-dataset-id="cameras"/>',
+        template: '<workspace data-dataset-id="cameras"/>'
       });
   });
 
